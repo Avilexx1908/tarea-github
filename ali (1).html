@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌸 Clima y Capitales de Centroamérica 🌸</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+
+    background:linear-gradient(
+        -45deg,
+        #ffd6e8,
+        #ffc2d1,
+        #d9b3ff,
+        #c9f0ff,
+        #ffe5ec,
+        #e0c3fc
+    );
+
+    background-size:600% 600%;
+    animation:fondo 18s ease infinite;
+}
+
+@keyframes fondo{
+    0%{
+        background-position:0% 50%;
+    }
+
+    25%{
+        background-position:50% 100%;
+    }
+
+    50%{
+        background-position:100% 50%;
+    }
+
+    75%{
+        background-position:50% 0%;
+    }
+
+    100%{
+        background-position:0% 50%;
+    }
+}
+
+/* Tarjeta principal */
+.contenedor{
+    width:420px;
+    padding:30px;
+    border-radius:30px;
+
+    background:rgba(255,255,255,.25);
+    backdrop-filter:blur(18px);
+
+    box-shadow:
+    0 8px 30px rgba(0,0,0,.15);
+
+    text-align:center;
+
+    color:#4b3f72;
+
+    animation:aparecer 1s ease;
+}
+
+@keyframes aparecer{
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+h1{
+    margin-bottom:20px;
+    color:#b05cc6;
+    font-size:30px;
+}
+
+/* Input */
+input{
+    width:100%;
+    padding:13px;
+
+    border:none;
+    border-radius:15px;
+
+    outline:none;
+
+    margin-bottom:12px;
+
+    font-size:15px;
+}
+
+/* Botón */
+button{
+    width:100%;
+
+    padding:13px;
+
+    border:none;
+    border-radius:15px;
+
+    background:#ff8fab;
+
+    color:white;
+
+    font-size:16px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+button:hover{
+    transform:scale(1.03);
+    background:#ff6f91;
+}
+
+/* Resultado */
+.card{
+    margin-top:20px;
+
+    background:rgba(255,255,255,.20);
+
+    border-radius:25px;
+
+    padding:20px;
+
+    animation:mostrar .6s ease;
+}
+
+@keyframes mostrar{
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.pais{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.capital{
+    font-size:18px;
+    margin-bottom:15px;
+}
+
+.temp{
+    font-size:65px;
+    font-weight:bold;
+    color:#ff6f91;
+    margin:15px 0;
+}
+
+.detalles{
+    display:flex;
+    gap:12px;
+    margin-top:15px;
+}
+
+.detalle{
+    flex:1;
+
+    background:rgba(255,255,255,.25);
+
+    border-radius:15px;
+
+    padding:12px;
+}
+
+.detalle h4{
+    margin-bottom:6px;
+}
+
+.error{
+    margin-top:15px;
+
+    background:#ff758f;
+
+    color:white;
+
+    padding:12px;
+
+    border-radius:15px;
+}
+
+.cargando{
+    margin-top:15px;
+
+    color:#b05cc6;
+
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>🌸 Centroamérica 🌸</h1>
+
+    <input
+        type="text"
+        id="pais"
+        placeholder="Escribe un país de Centroamérica"
+    >
+
+    <button onclick="buscarClima()">
+        Buscar
+    </button>
+
+    <div id="resultado"></div>
+
+</div>
+
+<script>
+
+const paises = {
+
+    "guatemala":"Ciudad de Guatemala",
+
+    "belice":"Belmopán",
+
+    "honduras":"Tegucigalpa",
+
+    "el salvador":"San Salvador",
+
+    "nicaragua":"Managua",
+
+    "costa rica":"San José",
+
+    "panama":"Ciudad de Panamá",
+
+    "panamá":"Ciudad de Panamá"
+
+};
+
+function buscarClima(){
+
+    let pais =
+    document.getElementById("pais")
+    .value.toLowerCase().trim();
+
+    if(!paises[pais]){
+
+        mostrarError(
+        "Solo se permiten países de Centroamérica 🌎"
+        );
+
+        return;
+    }
+
+    document.getElementById("resultado")
+    .innerHTML =
+    '<div class="cargando">⏳ Buscando información...</div>';
+
+    let urlGeo =
+    `https://geocoding-api.open-meteo.com/v1/search?name=${pais}&count=1&language=es&format=json`;
+
+    fetch(urlGeo)
+
+    .then(res => res.json())
+
+    .then(data => {
+
+        let lat = data.results[0].latitude;
+
+        let lon = data.results[0].longitude;
+
+        return fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m`
+        );
+
+    })
+
+    .then(res => res.json())
+
+    .then(datos => {
+
+        let capital = paises[pais];
+
+        let temp =
+        Math.round(datos.current.temperature_2m);
+
+        let humedad =
+        datos.current.relative_humidity_2m;
+
+        let viento =
+        datos.current.wind_speed_10m;
+
+        document.getElementById("resultado")
+        .innerHTML =
+
+        `<div class="card">
+
+            <div class="pais">
+                🌎 ${pais.toUpperCase()}
+            </div>
+
+            <div class="capital">
+                🏛 Capital: ${capital}
+            </div>
+
+            <div class="temp">
+                ${temp}°C
+            </div>
+
+            <div class="detalles">
+
+                <div class="detalle">
+                    <h4>💧 Humedad</h4>
+                    <p>${humedad}%</p>
+                </div>
+
+                <div class="detalle">
+                    <h4>💨 Viento</h4>
+                    <p>${viento} km/h</p>
+                </div>
+
+            </div>
+
+        </div>`;
+
+    })
+
+    .catch(() => {
+
+        mostrarError(
+        "No se pudo obtener la información."
+        );
+
+    });
+
+}
+
+function mostrarError(mensaje){
+
+    document.getElementById("resultado")
+    .innerHTML =
+
+    `<div class="error">
+        ❌ ${mensaje}
+    </div>`;
+}
+
+document.getElementById("pais")
+.addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+        buscarClima();
+    }
+
+});
+
+</script>
+
+</body>
+</html>

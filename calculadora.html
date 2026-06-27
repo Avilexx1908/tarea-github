@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora Científica</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1e1e2f, #2c2c54);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.calculadora {
+    background: #222;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    width: 300px;
+}
+
+#pantalla {
+    width: 100%;
+    height: 60px;
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-align: right;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #000;
+    color: #0f0;
+}
+
+.botones {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+button {
+    padding: 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #444;
+    color: white;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #666;
+}
+
+.operador { background: #ff9500; }
+.igual { background: #28a745; }
+.clear { background: #dc3545; }
+.funcion { background: #007bff; }
+</style>
+
+</head>
+<body>
+
+<div class="calculadora">
+    <input type="text" id="pantalla" disabled>
+
+    <div class="botones">
+        <button onclick="agregar('7')">7</button>
+        <button onclick="agregar('8')">8</button>
+        <button onclick="agregar('9')">9</button>
+        <button class="operador" onclick="operar('/')">÷</button>
+
+        <button onclick="agregar('4')">4</button>
+        <button onclick="agregar('5')">5</button>
+        <button onclick="agregar('6')">6</button>
+        <button class="operador" onclick="operar('*')">x</button>
+
+        <button onclick="agregar('1')">1</button>
+        <button onclick="agregar('2')">2</button>
+        <button onclick="agregar('3')">3</button>
+        <button class="operador" onclick="operar('-')">-</button>
+
+        <button onclick="agregar('0')">0</button>
+        <button onclick="agregar('.')">.</button>
+        <button class="igual" onclick="calcular()">=</button>
+        <button class="operador" onclick="operar('+')">+</button>
+
+        <button class="funcion" onclick="raiz()">√</button>
+        <button class="funcion" onclick="potencia()">x²</button>
+        <button class="funcion" onclick="seno()">sin</button>
+        <button class="funcion" onclick="coseno()">cos</button>
+        <button class="funcion" onclick="tangente()">tan</button>
+        <button class="funcion" onclick="logaritmo()">log</button>
+        <button class="clear" onclick="limpiar()">C</button>
+    </div>
+</div>
+
+<script>
+let pantalla = document.getElementById("pantalla");
+
+function agregar(valor) {
+    pantalla.value += valor;
+}
+
+function operar(op) {
+    pantalla.value += op;
+}
+
+function limpiar() {
+    pantalla.value = "";
+}
+
+function calcular() {
+    try {
+        pantalla.value = eval(pantalla.value);
+    } catch {
+        pantalla.value = "Error";
+    }
+}
+
+function raiz() {
+    pantalla.value = Math.sqrt(pantalla.value);
+}
+
+function potencia() {
+    pantalla.value = Math.pow(pantalla.value, 2);
+}
+
+function seno() {
+    pantalla.value = Math.sin(pantalla.value);
+}
+
+function coseno() {
+    pantalla.value = Math.cos(pantalla.value);
+}
+
+function tangente() {
+    pantalla.value = Math.tan(pantalla.value);
+}
+
+function logaritmo() {
+    pantalla.value = Math.log10(pantalla.value);
+}
+
+document.addEventListener("keydown", function(e) {
+    if (!isNaN(e.key) || "+-*/.".includes(e.key)) {
+        agregar(e.key);
+    }
+
+    if (e.key === "Enter") {
+        calcular();
+    }
+
+    if (e.key === "Backspace") {
+        pantalla.value = pantalla.value.slice(0, -1);
+    }
+});
+</script>
+
+</body>
+</html>
